@@ -27,7 +27,7 @@ var cheerio = require('cheerio');
 var rest = require('restler');
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
-var URL_DEFAULT = "http://glacial-lake-9641.herokuapp.com/"
+var URL_DEFAULT = "http://glacial-lake-9641.herokuapp.com/";
 
 var assertFileExists = function(infile) {
     var instr = infile.toString();
@@ -66,8 +66,10 @@ var checkUrl = function(url, checksfile) {
         var present = $(checks[ii]).length > 0;
         out[checks[ii]] = present;
     }
-    return out;
-}
+    var outJson = JSON.stringify(out, null, 4);
+	console.log(outJson);
+	});
+};
 
 var clone = function(fn) {
     // Workaround for commander.js issue.
@@ -81,13 +83,13 @@ if(require.main == module) {
 		.option('-u, --url <url>', 'URL to be evaluated', URL_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
         .parse(process.argv);
-	var checkJson = "";
 	if (program.url)
-		checkJson = checkUrl(program.url, program.checks);
-	else 
-    	checkJson = checkHtmlFile(program.file, program.checks);
-    var outJson = JSON.stringify(checkJson, null, 4);
-    console.log(outJson);
+		checkUrl(program.url, program.checks);
+	else {
+    	var checkJson = checkHtmlFile(program.file, program.checks);
+    	var outJson = JSON.stringify(checkJson, null, 4);
+    	console.log(outJson);
+	}
 } else {
     exports.checkHtmlFile = checkHtmlFile;
 }
